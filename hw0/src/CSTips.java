@@ -1,8 +1,13 @@
 public class CSTips {
+    public static int urmom;
+    public static Printer isdum;
+
     public static void main(String[] args) {
         System.out.println("testing");
-        System.out.println("cool");
+        System.out.println("coole");
 
-        Printer p = new Printer(1);
-    }
+        isdum = new Printer(1);
+
+        System.out.println(isdum.garbageCollect());
+        }
 }

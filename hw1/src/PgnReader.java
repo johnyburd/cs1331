@@ -37,26 +37,56 @@ public class PgnReader {
      *
      * @param theoreticalBoard
      *          board on which the arrays will be cast
-     * @param s
-     *          the coordinates of the square from which the ray will be cast
-     * @param vector
-     *          the vector of the direction the ray will be cast where each
-     *          element will be 0 or 1
+     * @param i
+     *          y value (rank/row) of the square
+     * @param j
+     *          x value (file/column) of the square
+     * @param x
+     *          x component of the vector that determines the direction of the ray
+     * @param y
+     *          y component of the vector that determines the direction of the ray
+     *          
+     * @return the coordinates of the first piece the ray collides with, or '0' if none
+     */
+    private static int[] rayCasterCoords(char[][] theoreticalBoard, int i, int j, int x, int y)
+    {
+        j += x; // go ahead and add one iteration cause we
+        i -= y; // don't want to return our own piece
+        while (i>=0 && j>=0 && i<8 && j<8)
+        {
+            if (theoreticalBoard[i][j] != '0')
+                return new int[]{i, j};
+            j += x;
+            i -= y;
+        }
+        return new int[]{-1,-1}; // ray ran off the board
+    }
+    /**
+     * Cast a ray to find if there is a piece in any direction from a given square.
+     *
+     * @param theoreticalBoard
+     *          board on which the arrays will be cast
+     * @param i
+     *          y value (rank/row) of the square
+     * @param j
+     *          x value (file/column) of the square
+     * @param x
+     *          x component of the vector that determines the direction of the ray
+     * @param y
+     *          y component of the vector that determines the direction of the ray
      *          
      * @return the first piece the ray collides with, or '0' if none
      */
-    private static char rayCaster(char[][] theoreticalBoard, int[] s, int[] vector)
+    private static char rayCaster(char[][] theoreticalBoard, int i, int j, int x, int y)
     {
-        int i = s[0];
-        int j = s[1];
-        j += vector[0]; // go ahead and add one iteration cause we
-        i -= vector[1]; // don't want to return our own piece
+        j += x; // go ahead and add one iteration cause we
+        i -= y; // don't want to return our own piece
         while (i>=0 && j>=0 && i<8 && j<8)
         {
             if (theoreticalBoard[i][j] != '0')
                 return theoreticalBoard[i][j];
-            j += vector[0];
-            i -= vector[1];
+            j += x;
+            i -= y;
         }
         return '0'; // ray ran off the board
     }
@@ -66,34 +96,55 @@ public class PgnReader {
         for (int i=0;i<8;i++) {
             for (int j=0;j<8;j++) {
                 char p = theoreticalBoard[i][j];
-                int[] square = {i, j};
                 switch (p) {
                     case 'r':
-                        return (rayCaster(theoreticalBoard, square, new int[]{1, 0}) == 'K' ||
-                                rayCaster(theoreticalBoard, square, new int[]{0, 1}) == 'K' ||
-                                rayCaster(theoreticalBoard, square, new int[]{-1,0}) == 'K' ||
-                                rayCaster(theoreticalBoard, square, new int[]{0,-1}) == 'K'); 
+                        if (rayCaster(theoreticalBoard, i, j, 1, 0) == 'K' ||
+                                rayCaster(theoreticalBoard, i, j, 0, 1) == 'K' ||
+                                rayCaster(theoreticalBoard, i, j, -1,0) == 'K' ||
+                                rayCaster(theoreticalBoard, i, j, 0,-1) == 'K')
+                            return true;
+                        break;
                     case 'n':
                         // I don't think there's actually any point in checking
                         // this because a knight can't pin anything.
+                        //
+                        // ^ that is stupid reasoning and fake news
                         break;
                     case 'b':
-                        return (rayCaster(theoreticalBoard, square, new int[]{1,  1}) == 'K' ||
-                                rayCaster(theoreticalBoard, square, new int[]{-1,-1}) == 'K' ||
-                                rayCaster(theoreticalBoard, square, new int[]{-1, 1}) == 'K' ||
-                                rayCaster(theoreticalBoard, square, new int[]{1, -1}) == 'K'); 
-                    case 'q':
-                        return (rayCaster(theoreticalBoard, square, new int[]{1, 0}) == 'K' ||
-                                rayCaster(theoreticalBoard, square, new int[]{0, 1}) == 'K' ||
-                                rayCaster(theoreticalBoard, square, new int[]{-1,0}) == 'K' ||
-                                rayCaster(theoreticalBoard, square, new int[]{0,-1}) == 'K' ||
-                                rayCaster(theoreticalBoard, square, new int[]{1,  1}) == 'K' ||
-                                rayCaster(theoreticalBoard, square, new int[]{-1,-1}) == 'K' ||
-                                rayCaster(theoreticalBoard, square, new int[]{-1, 1}) == 'K' ||
-                                rayCaster(theoreticalBoard, square, new int[]{1, -1}) == 'K'); 
-                    case 'k':
+                        if (rayCaster(theoreticalBoard, i, j, 1, 1) == 'K' ||
+                                rayCaster(theoreticalBoard, i, j, -1,-1) == 'K' ||
+                                rayCaster(theoreticalBoard, i, j, -1, 1) == 'K' ||
+                                rayCaster(theoreticalBoard, i, j, 1, -1) == 'K')
+                            return true;
                         break;
+                    case 'q':
+                        if (rayCaster(theoreticalBoard, i, j, 1, 0) == 'K' ||
+                                rayCaster(theoreticalBoard, i, j, 0, 1) == 'K' ||
+                                rayCaster(theoreticalBoard, i, j, -1,0) == 'K' ||
+                                rayCaster(theoreticalBoard, i, j, 0,-1) == 'K' ||
+                                rayCaster(theoreticalBoard, i, j, 1, 1) == 'K' ||
+                                rayCaster(theoreticalBoard, i, j, -1,-1) == 'K' ||
+                                rayCaster(theoreticalBoard, i, j, -1, 1) == 'K' ||
+                                rayCaster(theoreticalBoard, i, j, 1, -1) == 'K')
+                            return true;
+                        break;
+                    case 'k':
+                        for (int k=-1;k<2;k++)
+                        {
+                            for (int l=-1;l<2;l++)
+                            {
+                                if ((k+i >= 0 && k+i < 8) && (l+j >= 0 && l+j < 8))
+                                {
+                                    if (theoreticalBoard[i+k][j+l] == 'K')
+                                        return true;
+                                }
+
+                            }
+                        }
+                        break;
+
                     case 'p':
+                        //if (theoreticalBoard
                         break;
                 }
             }
@@ -112,16 +163,18 @@ public class PgnReader {
                     theoreticalBoard[i][j] = Character.toUpperCase(square);
             }
         }
+        //TODO board has to be flipped vertically in addition for this to actually work
         return whiteInCheck(theoreticalBoard);
     }
 
 
-    private static boolean isLegal(int[] iPos, int[] fPos, boolean whitesTurn) {
-        char piece = board[iPos[0]][iPos[1]];
-        char finalSquare = board[fPos[0]][fPos[1]];
+    private static boolean isLegal(int iR, int iF, int fF, int fR, boolean whitesTurn) {
+        char piece = board[iR][iF];
+        char finalSquare = board[fR][fF];
         char[][] theoreticalBoard = board.clone();
-        theoreticalBoard[fPos[0]][fPos[1]] = board[iPos[0]][iPos[1]]; // new board as if move is done
-        theoreticalBoard[iPos[0]][iPos[1]] = '0';
+        int[] fSquare = new int[]{fR, fF};
+        theoreticalBoard[fR][fF] = board[iR][iF]; // new board as if move is done
+        theoreticalBoard[iR][iF] = '0';
 
         if ((isWhite(piece) && isWhite(finalSquare)) || (!isWhite(piece) && !isWhite(finalSquare)))
             return false; // if a piece is trying to move onto its own, there's
@@ -137,28 +190,52 @@ public class PgnReader {
         switch (piece) {
         case 'r':
         case 'R':
-            // if rook moves diagonally, not legal
-            if (iPos[0] != fPos[0] && iPos[1] != fPos[1])
-                return false;
-            if (iPos[0] > fPos[0]) // rook moves up the board
-                ; //TODO up
-            if (iPos[0] < fPos[0]) // rook moves down the board
-                ; //TODO down
-            if (iPos[1] > fPos[1]) // rook moves left
-                ; //TODO left
-            if (iPos[1] < fPos[1]) // rook moves right
-                ; //TODO right
-
+            int[] right = rayCasterCoords(theoreticalBoard, iR, iF, 1, 0);
+            int[] left = rayCasterCoords(theoreticalBoard, iR, iF, -1, 0);
+            int[] up = rayCasterCoords(theoreticalBoard, iR, iF, 0, 1);
+            int[] down = rayCasterCoords(theoreticalBoard, iR, iF, 0, -1);
+            if (!Arrays.equals(fSquare, up) &&
+                !Arrays.equals(fSquare, down) &&
+                !Arrays.equals(fSquare, left) &&
+                !Arrays.equals(fSquare, right))
+                return false; // actual movement is not equal to raycast in any drection; not valid
             break;
 
         case 'n':
         case 'N':
+            //TODO knights.  this looks hard.
             break;
         case 'b':
         case 'B':
+            int[] upRight = rayCasterCoords(theoreticalBoard, iR, iF, 1, 1);
+            int[] upLeft = rayCasterCoords(theoreticalBoard, iR, iF, -1, 1);
+            int[] downRight = rayCasterCoords(theoreticalBoard, iR, iF, 1, -1);
+            int[] downLeft = rayCasterCoords(theoreticalBoard, iR, iF, -1, -1);
+            if (!Arrays.equals(fSquare, upRight) &&
+                !Arrays.equals(fSquare, upRight) &&
+                !Arrays.equals(fSquare, upRight) &&
+                !Arrays.equals(fSquare, upRight))
+                return false; // actual movement is not equal to raycast in any drection; not valid
             break;
         case 'q':
         case 'Q':
+            int[] upRight = rayCasterCoords(theoreticalBoard, iR, iF, 1, 1);
+            int[] upLeft = rayCasterCoords(theoreticalBoard, iR, iF, -1, 1);
+            int[] downRight = rayCasterCoords(theoreticalBoard, iR, iF, 1, -1);
+            int[] downLeft = rayCasterCoords(theoreticalBoard, iR, iF, -1, -1);
+            int[] right = rayCasterCoords(theoreticalBoard, iR, iF, 1, 0);
+            int[] left = rayCasterCoords(theoreticalBoard, iR, iF, -1, 0);
+            int[] up = rayCasterCoords(theoreticalBoard, iR, iF, 0, 1);
+            int[] down = rayCasterCoords(theoreticalBoard, iR, iF, 0, -1);
+            if (!Arrays.equals(fSquare, upRight) &&
+                !Arrays.equals(fSquare, upRight) &&
+                !Arrays.equals(fSquare, upRight) &&
+                !Arrays.equals(fSquare, upRight) &&
+                !Arrays.equals(fSquare, up) &&
+                !Arrays.equals(fSquare, down) &&
+                !Arrays.equals(fSquare, left) &&
+                !Arrays.equals(fSquare, right))
+                return false; // actual movement is not equal to raycast in any drection; not valid
             break;
         case 'k':
         case 'K':
@@ -184,6 +261,7 @@ public class PgnReader {
         char turn = 'b';
         for (int i = 0; i < 8; i++) {
             int k = 0;
+            int mod = 1;
             for (int j = 0; j < 8; j++) {
                 char square = board[i][j];
                 if (square != '0') {
@@ -192,8 +270,9 @@ public class PgnReader {
                         k = 0;
                     }
                     fen += square;
+                    mod = 0;
                 } else if (k > 0 && j == 7)
-                    fen += k;
+                    fen += k + mod;
                 else
                     k++;
             }
@@ -241,6 +320,38 @@ public class PgnReader {
         return getFEN();
     }
 
+    private static String getMove(int i, String game) {
+        Pattern pattern = Pattern
+                .compile("(.|\\s)*?"+i+"\\.[ \n]+(.*?)("+(i+1)+"\\.|\\n)");
+        Matcher matcher = pattern.matcher(game);
+        if (matcher.find())
+        {
+            return matcher.group(2);
+        }
+        return "";
+    }
+    private static String[] getMoves(String game) {
+        //TODO redo moves method because it can sometimes backtrace to infinity if the file is wrong
+        return new String[]{"hello"};
+    }
+
+    private static void fullMove(int i, String move) {
+        System.out.println("fullmove: " +move);
+        Pattern pattern = Pattern.compile("([^ ]*)( ?)(.*)?");
+        Matcher matcher = pattern.matcher(move);
+        matcher.matches();
+
+        String whiteMove = matcher.group(1);
+        whiteMove = whiteMove.replaceAll("[^a-zA-Z\\d]","");
+        String blackMove = "";
+        blackMove = matcher.group(3);
+        blackMove = blackMove.replaceAll("[^a-zA-Z\\d]","");
+
+        System.out.println("whitemove: " +whiteMove);
+        System.out.println("blackmove: " +blackMove);
+
+    }
+
     /**
      * Reads the file named by path and returns its content as a String.
      *
@@ -276,6 +387,12 @@ public class PgnReader {
         System.out.println("Final Position:");
         System.out.println(finalPosition(game));
         System.out.format("number of moves: %d%n", numMoves(game));
+
+        for (int i=1;i<=numMoves(game);i++)
+        {
+            System.out.println(i);
+            fullMove(i,getMove(i, game));
+        }
         //int[] a = {1,1};
         //isLegal(a,a);
 

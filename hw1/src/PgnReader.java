@@ -5,7 +5,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.regex.Pattern;
 import java.util.regex.Matcher;
-import java.util.Arrays;
 
 public class PgnReader {
 
@@ -21,8 +20,8 @@ public class PgnReader {
             { '0', '0', '0', '0', '0', '0', '0', '0' },
             { '0', '0', '0', '0', '0', '0', '0', '0' },
             { '0', '0', '0', '0', '0', '0', '0', '0' },
-            { '0', '0', '0', '0', '0', 'P', 'P', '0' },
-            { 'P', 'P', 'P', 'P', 'P', '0', '0', 'P' },
+            { '0', '0', '0', '0', '0', '0', '0', '0' },
+            { 'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P' },
             { 'R', 'N', 'B', 'Q', 'K', 'B', 'N', 'R' }};
     private static boolean isWhite(char p)
     {
@@ -31,6 +30,24 @@ public class PgnReader {
     private static boolean isBlack(char p)
     {
         return Character.isLowerCase(p);
+    }
+    // is target between start and stop?
+    private static boolean isBetween(int[] start, int[] stop, int[] target, int x, int y)
+    {
+        int rank;
+        int file;
+        for (int i = 1; i<=8; i++) {
+            rank = start[0] + (y * i * -1);
+            file = start[1] + (x * i);
+            if (rank < 8 && rank >= 0 && file < 8 && file >= 0) {
+                if (rank == target[0] && file == target[1])
+                    return true;
+                if (rank == stop[0] && file == stop[1])
+                    return false;
+            } 
+        }
+        return false;
+        
     }
     /**
      * Cast a ray to find if there is a piece in any direction from a given square.
@@ -91,157 +108,232 @@ public class PgnReader {
         return '0'; // ray ran off the board
     }
 
-    private static boolean whiteInCheck(char[][] theoreticalBoard)
+    private static boolean inCheck(char[][] theoreticalBoard, char king)
     {
         for (int i=0;i<8;i++) {
             for (int j=0;j<8;j++) {
                 char p = theoreticalBoard[i][j];
-                switch (p) {
-                    case 'r':
-                        if (rayCaster(theoreticalBoard, i, j, 1, 0) == 'K' ||
-                                rayCaster(theoreticalBoard, i, j, 0, 1) == 'K' ||
-                                rayCaster(theoreticalBoard, i, j, -1,0) == 'K' ||
-                                rayCaster(theoreticalBoard, i, j, 0,-1) == 'K')
-                            return true;
-                        break;
-                    case 'n':
-                        // I don't think there's actually any point in checking
-                        // this because a knight can't pin anything.
-                        //
-                        // ^ that is stupid reasoning and fake news
-                        break;
-                    case 'b':
-                        if (rayCaster(theoreticalBoard, i, j, 1, 1) == 'K' ||
-                                rayCaster(theoreticalBoard, i, j, -1,-1) == 'K' ||
-                                rayCaster(theoreticalBoard, i, j, -1, 1) == 'K' ||
-                                rayCaster(theoreticalBoard, i, j, 1, -1) == 'K')
-                            return true;
-                        break;
-                    case 'q':
-                        if (rayCaster(theoreticalBoard, i, j, 1, 0) == 'K' ||
-                                rayCaster(theoreticalBoard, i, j, 0, 1) == 'K' ||
-                                rayCaster(theoreticalBoard, i, j, -1,0) == 'K' ||
-                                rayCaster(theoreticalBoard, i, j, 0,-1) == 'K' ||
-                                rayCaster(theoreticalBoard, i, j, 1, 1) == 'K' ||
-                                rayCaster(theoreticalBoard, i, j, -1,-1) == 'K' ||
-                                rayCaster(theoreticalBoard, i, j, -1, 1) == 'K' ||
-                                rayCaster(theoreticalBoard, i, j, 1, -1) == 'K')
-                            return true;
-                        break;
-                    case 'k':
-                        for (int k=-1;k<2;k++)
+                char rook = 'r';
+                char knight = 'n';
+                char bishop = 'b';
+                char enemyKing = 'k';
+                char queen = 'q';
+                char pawn = 'p';
+                if (isBlack(king)) {
+                    rook = 'R';
+                    knight = 'N';
+                    bishop = 'B';
+                    enemyKing = 'K';
+                    queen = 'Q';
+                    pawn = 'P';
+                }
+                if (p == rook) {
+                    if (rayCaster(theoreticalBoard, i, j, 1, 0) == king ||
+                            rayCaster(theoreticalBoard, i, j, 0, 1) == king ||
+                            rayCaster(theoreticalBoard, i, j, -1,0) == king ||
+                            rayCaster(theoreticalBoard, i, j, 0,-1) == king)
+                        return true;
+                }
+                if (p == knight) {
+                    // I don't think there's actually any point in checking
+                    // this because a knight can't pin anything.
+                    // TODO
+                    // ^ that is stupid reasoning and fake news
+                    // king could still try to walk into it
+                }
+                if (p == bishop) {
+                    if (rayCaster(theoreticalBoard, i, j, 1, 1) == king ||
+                            rayCaster(theoreticalBoard, i, j, -1,-1) == king ||
+                            rayCaster(theoreticalBoard, i, j, -1, 1) == king ||
+                            rayCaster(theoreticalBoard, i, j, 1, -1) == king)
+                        return true;
+                }
+                if (p == queen) {
+                    if (rayCaster(theoreticalBoard, i, j, 1, 0) == king ||
+                            rayCaster(theoreticalBoard, i, j, 0, 1) == king ||
+                            rayCaster(theoreticalBoard, i, j, -1,0) == king ||
+                            rayCaster(theoreticalBoard, i, j, 0,-1) == king ||
+                            rayCaster(theoreticalBoard, i, j, 1, 1) == king ||
+                            rayCaster(theoreticalBoard, i, j, -1,-1) == king ||
+                            rayCaster(theoreticalBoard, i, j, -1, 1) == king ||
+                            rayCaster(theoreticalBoard, i, j, 1, -1) == king)
+                        return true;
+                }
+                if (p == enemyKing) {
+                    for (int k=-1;k<2;k++)
+                    {
+                        for (int l=-1;l<2;l++)
                         {
-                            for (int l=-1;l<2;l++)
+                            if ((k+i >= 0 && k+i < 8) && (l+j >= 0 && l+j < 8))
                             {
-                                if ((k+i >= 0 && k+i < 8) && (l+j >= 0 && l+j < 8))
-                                {
-                                    if (theoreticalBoard[i+k][j+l] == 'K')
-                                        return true;
-                                }
-
+                                if (theoreticalBoard[i+k][j+l] == king)
+                                    return true;
                             }
-                        }
-                        break;
 
-                    case 'p':
-                        //if (theoreticalBoard
-                        break;
+                        }
+                    }
+                }
+
+                if (p == pawn){
+                    //TODO pawn check
                 }
             }
         }
         return false;
     }
-    private static boolean blackInCheck(char[][] theoreticalBoard)
+    private static boolean isLegal(String c, boolean whitesTurn)
     {
-        for (int i=0;i<8;i++) {
-            for (int j=0;j<8;j++) {
-                // switch entire board so we can reuse whiteInCheck method
-                char square = theoreticalBoard[i][j];
-                if (isWhite(square))
-                    theoreticalBoard[i][j] = Character.toLowerCase(square);
-                else if (isBlack(square))
-                    theoreticalBoard[i][j] = Character.toUpperCase(square);
-            }
+        char king = 'K';
+        char queen = 'Q';
+        if (!whitesTurn){
+            king = 'k';
+            queen = 'q';
         }
-        //TODO board has to be flipped vertically in addition for this to actually work
-        return whiteInCheck(theoreticalBoard);
+        if (c.equals("000")) // queen side castling
+            if (castle.indexOf(queen) == -1)
+                return false;
+        if (c.equals("00")) // king side castling
+            if (castle.indexOf(king) == -1)
+                return false;
+        else
+            return false;
+        return true;
     }
 
-
-    private static boolean isLegal(int iR, int iF, int fF, int fR, boolean whitesTurn) {
+    private static boolean isLegal(int iR, int iF, int fR, int fF, boolean whitesTurn) {
         char piece = board[iR][iF];
+        //System.out.println("(legal)piece "+piece);
         char finalSquare = board[fR][fF];
-        char[][] theoreticalBoard = board.clone();
-        int[] fSquare = new int[]{fR, fF};
+        //System.out.println("final piece "+fR+" "+fF+" "+ finalSquare);
+        char[][] theoreticalBoard = new char[8][8];
+        for (int i=0;i<8;i++)
+            for (int j=0;j<8;j++)
+                theoreticalBoard[i][j] = board[i][j];
+        int[] fSquare = new int[]{fF, fR};
+        int[] iSquare = new int[]{iF, iR};
         theoreticalBoard[fR][fF] = board[iR][iF]; // new board as if move is done
         theoreticalBoard[iR][iF] = '0';
+        int passantR = -1;
+        int passantF = -1;
+        if (!passant.equals("-")) {
+            passantR = 8 - Integer.valueOf(passant.charAt(1)+"");
+            passantF = passant.charAt(0) - 97; // subtracting 97 from the char will give a value from 0 to 7 that will correspond to the file in the array
+        }
 
-        if ((isWhite(piece) && isWhite(finalSquare)) || (!isWhite(piece) && !isWhite(finalSquare)))
+        if ((isWhite(piece) && isWhite(finalSquare)) || (isBlack(piece) && isBlack(finalSquare))){
             return false; // if a piece is trying to move onto its own, there's
                           // something wrong and it's def not legal
-        
+        }
+       
         if (whitesTurn)
-            if (whiteInCheck(theoreticalBoard))
+            if (inCheck(theoreticalBoard, 'K'))
                 return false;  // white's move can't put white in check
         else
-            if (blackInCheck(theoreticalBoard))
+            if (inCheck(theoreticalBoard, 'k'))
                 return false; // black's move can't put black in check
+
+        int[] upRight = rayCasterCoords(board, iR, iF, 1, 1);
+        int[] upLeft = rayCasterCoords(board, iR, iF, -1, 1);
+        int[] downRight = rayCasterCoords(board, iR, iF, 1, -1);
+        int[] downLeft = rayCasterCoords(board, iR, iF, -1, -1);
+        int[] right = rayCasterCoords(board, iR, iF, 1, 0);
+        int[] left = rayCasterCoords(board, iR, iF, -1, 0);
+        int[] up = rayCasterCoords(board, iR, iF, 0, 1);
+        int[] down = rayCasterCoords(board, iR, iF, 0, -1);
 
         switch (piece) {
         case 'r':
         case 'R':
-            int[] right = rayCasterCoords(theoreticalBoard, iR, iF, 1, 0);
-            int[] left = rayCasterCoords(theoreticalBoard, iR, iF, -1, 0);
-            int[] up = rayCasterCoords(theoreticalBoard, iR, iF, 0, 1);
-            int[] down = rayCasterCoords(theoreticalBoard, iR, iF, 0, -1);
-            if (!Arrays.equals(fSquare, up) &&
-                !Arrays.equals(fSquare, down) &&
-                !Arrays.equals(fSquare, left) &&
-                !Arrays.equals(fSquare, right))
-                return false; // actual movement is not equal to raycast in any drection; not valid
+            if (!isBetween(iSquare, up, fSquare, 0, 1) &&
+                !isBetween(iSquare, down, fSquare, 0, -1) &&
+                !isBetween(iSquare, left, fSquare, -1, 0) &&
+                !isBetween(iSquare, right, fSquare, 1, 0))
+                return false;
             break;
 
         case 'n':
         case 'N':
-            //TODO knights.  this looks hard.
+            if (fF == iF + 2 || fF == iF -2) {
+                if (iR + 1 != fR && iR - 1 != fR) {
+                    return false; 
+                }
+            }
+            else if (fR == iR - 2 || fR == iR + 2) {
+                if (iF + 1 != fF && iF -1 != fF) {
+                    return false;
+                }
+            }
+            else  {
+                return false; // if it doesn't move like a knight it's illegal
+                              // what more is there to say?
+            }
+
             break;
         case 'b':
         case 'B':
-            int[] upRight = rayCasterCoords(theoreticalBoard, iR, iF, 1, 1);
-            int[] upLeft = rayCasterCoords(theoreticalBoard, iR, iF, -1, 1);
-            int[] downRight = rayCasterCoords(theoreticalBoard, iR, iF, 1, -1);
-            int[] downLeft = rayCasterCoords(theoreticalBoard, iR, iF, -1, -1);
-            if (!Arrays.equals(fSquare, upRight) &&
-                !Arrays.equals(fSquare, upRight) &&
-                !Arrays.equals(fSquare, upRight) &&
-                !Arrays.equals(fSquare, upRight))
+
+            if (!isBetween(iSquare, upRight, fSquare, 1, 1) &&
+                !isBetween(iSquare, downRight, fSquare, 1, -1) &&
+                !isBetween(iSquare, downLeft, fSquare, -1, -1) &&
+                !isBetween(iSquare, upLeft, fSquare, -1, 1))
                 return false; // actual movement is not equal to raycast in any drection; not valid
             break;
         case 'q':
         case 'Q':
-            int[] upRight = rayCasterCoords(theoreticalBoard, iR, iF, 1, 1);
-            int[] upLeft = rayCasterCoords(theoreticalBoard, iR, iF, -1, 1);
-            int[] downRight = rayCasterCoords(theoreticalBoard, iR, iF, 1, -1);
-            int[] downLeft = rayCasterCoords(theoreticalBoard, iR, iF, -1, -1);
-            int[] right = rayCasterCoords(theoreticalBoard, iR, iF, 1, 0);
-            int[] left = rayCasterCoords(theoreticalBoard, iR, iF, -1, 0);
-            int[] up = rayCasterCoords(theoreticalBoard, iR, iF, 0, 1);
-            int[] down = rayCasterCoords(theoreticalBoard, iR, iF, 0, -1);
-            if (!Arrays.equals(fSquare, upRight) &&
-                !Arrays.equals(fSquare, upRight) &&
-                !Arrays.equals(fSquare, upRight) &&
-                !Arrays.equals(fSquare, upRight) &&
-                !Arrays.equals(fSquare, up) &&
-                !Arrays.equals(fSquare, down) &&
-                !Arrays.equals(fSquare, left) &&
-                !Arrays.equals(fSquare, right))
+           // System.out.println("thing "+fSquare[0]+' '+fSquare[1]+' '+up[0]+' '+up[1]);
+            if (!isBetween(iSquare, upRight, fSquare, 1, 1) &&
+                !isBetween(iSquare, downRight, fSquare, 1, -1) &&
+                !isBetween(iSquare, downLeft, fSquare, -1, -1) &&
+                !isBetween(iSquare, upLeft, fSquare, -1, 1) &&
+                !isBetween(iSquare, up, fSquare, 0, 1) &&
+                !isBetween(iSquare, down, fSquare, 0, -1) &&
+                !isBetween(iSquare, left, fSquare, -1, 0) &&
+                !isBetween(iSquare, right, fSquare, 1, 0))
                 return false; // actual movement is not equal to raycast in any drection; not valid
             break;
         case 'k':
         case 'K':
+            //System.out.println("king "+Math.abs(fF-iF) + " " + Math.abs(fR -iR));
+            if (Math.abs(fF - iF) > 1 || Math.abs(fR - iR) > 1)
+                return false; // king can't move more than one square
             break;
         case 'p':
+            if (iR >= fR) {
+
+                return false; // black pawn can't move up the board
+            }
+            if (fR - iR > 1)
+            {
+                if (iR != 1 || fR - iR > 2) {
+                    return false; // pawn can sometimes move two if it is second row
+                }
+            }
+            if (iF != fF) {
+                if (Math.abs(iF - fF) > 1 || !isWhite(board[fR][fF]) && !(passantF == fF && passantR == fR)) {
+                    return false; // can't move more than one over
+                                  // and there has to be a white piece to take
+                                  // or it's moving onto the passant square
+                }
+            }
+            break;
         case 'P':
+            if (iR <= fR)
+            {
+                return false; // white pawn can't move down the board
+            }
+            if (iR - fR > 1)
+                if (iR != 6 || iR - fR > 2)
+                {
+                    return false; // pawn can sometimes move two if it is 7th row
+                }
+            if (iF != fF) {
+                if (Math.abs(iF - fF) > 1 || !isBlack(board[fR][fF]) && !(passantF == fF && passantR == fR)){
+
+                    return false; // can't move more than one over
+                                  // and there has to be a black piece to take
+                                  // or it's moving into the passant square
+                }
+            }
             break;
         }
         return true;
@@ -272,7 +364,9 @@ public class PgnReader {
                     fen += square;
                     mod = 0;
                 } else if (k > 0 && j == 7)
-                    fen += k + mod;
+                    fen += (k+1) + mod;
+                else if (k == 0 && j == 7)
+                    fen += 1;
                 else
                     k++;
             }
@@ -330,13 +424,8 @@ public class PgnReader {
         }
         return "";
     }
-    private static String[] getMoves(String game) {
-        //TODO redo moves method because it can sometimes backtrace to infinity if the file is wrong
-        return new String[]{"hello"};
-    }
 
     private static void fullMove(int i, String move) {
-        System.out.println("fullmove: " +move);
         Pattern pattern = Pattern.compile("([^ ]*)( ?)(.*)?");
         Matcher matcher = pattern.matcher(move);
         matcher.matches();
@@ -348,9 +437,145 @@ public class PgnReader {
         blackMove = blackMove.replaceAll("[^a-zA-Z\\d]","");
 
         System.out.println("whitemove: " +whiteMove);
+        if (!whiteMove.equals("01") && !whiteMove.equals("1212")) {
+            halfMove(whiteMove);
+            whitesTurn = false;
+        }
+        fullMove++;
+
+        //halfMove++;
         System.out.println("blackmove: " +blackMove);
+        if (!blackMove.equals("") && !blackMove.equals("10") && !blackMove.equals("1212")) {
+            halfMove(blackMove);
+            whitesTurn = true;
+        }
 
     }
+    private static void halfMove(String s) {
+        Pattern pattern = Pattern.compile("([KQNBRPO]?)([a-h]??)([1-8]??)x?([a-hO])([1-8O])([QNBR]?)");
+        Matcher matcher = pattern.matcher(s);
+        matcher.matches();
+        for (int i=0; i<6; i++)
+           System.out.println("group " + i +": (" + matcher.group(i)+")");
+        String piece = matcher.group(1);
+        String iFile = matcher.group(2);
+        String iRank = matcher.group(3);
+        String fFile = matcher.group(4);
+        String fRank = matcher.group(5);
+        String promotion = matcher.group(6);
+        int iF = -1;
+        int iR = -1;
+        int fF = -1;
+        int fR = -1;
+
+
+        if (!iFile.equals(""))
+            iF = iFile.charAt(0) - 97;
+        fF = fFile.charAt(0) - 97;
+        if (!iRank.equals(""))
+            iR = 8 - Integer.valueOf(iRank.charAt(0)+"");
+        if (!fRank.equals("O"))
+            fR = 8 - Integer.valueOf(fRank.charAt(0)+"");
+
+        if (piece.equals(""))
+        {
+            piece = "P";
+        }
+
+        if (s.indexOf('x') != -1 || piece == "P")
+            halfMove = 0; // piece captured or pawn moved; reset clock
+        else
+            halfMove++;
+
+        char p = piece.charAt(0);
+        if (!whitesTurn)
+            p = Character.toLowerCase(p);
+        if (piece.equals("O")) { // queen castle
+            System.out.println("attempting queen castle");
+            if(isLegal(s,whitesTurn)) {
+                int rank = 0;
+                if (whitesTurn)  {
+                    rank = 7;
+                    castle = castle.replace("KQ","");
+                }
+                else 
+                    castle = castle.replace("kq","");
+                board[rank][4] = '0'; // move king
+                board[rank][2] = 'K';
+                board[rank][0] = '0'; // move rook
+                board[rank][3] = 'R';
+            }
+        }
+                
+        else if (fFile.equals("O") && !piece.equals("O")) {
+            System.out.println("attempting king castle");
+            if(isLegal(s,whitesTurn)) {
+                int rank = 0;
+                if (whitesTurn) {
+                    rank = 7;
+                    castle = castle.replace("KQ","");
+                }
+                else
+                    castle = castle.replace("kq","");
+                board[rank][4] = '0'; // move king
+                board[rank][6] = 'K';
+                board[rank][7] = '0'; // move rook
+                board[rank][5] = 'R';
+            }
+        }
+        else {
+
+            for (int i=0; i<8;i++)
+                for (int j=0;j<8;j++)
+                    if (board[i][j] == p && (iR == i || iR == -1) &&
+                            (iF == j || iF == -1)) {
+                        if (isLegal(i, j, fR, fF, whitesTurn)) {
+                            board[i][j] = '0';
+                            board[fR][fF] = p;
+                            System.out.println("made move: " + piece+"("+i+", "+j+") to "+"("+fR+","+fF+")");
+                            // en passant
+                            passant = "-";
+                            if (Character.toLowerCase(p) == 'p' && fR - iR == 2) {
+                                passant = "";
+                                passant += (char)(iF + 97);
+                                passant += 8 - (fR+iR)/2;
+                            }
+                            // promotions
+                            if (!promotion.equals("")){
+                                char newPiece = promotion.charAt(0);
+                                if (!whitesTurn)
+                                    newPiece = Character.toLowerCase(newPiece);
+                                board[fR][fF] = newPiece;
+                            }
+                            // castling
+                            if (i == 7 && j == 0)
+                                castle = castle.replace("Q","");
+                            if (i ==7 && j == 7)
+                                castle = castle.replace("K","");
+                            if (i == 0 && j == 0)
+                                castle = castle.replace("q","");
+                            if (i == 0 && j == 7)
+                                castle = castle.replace("k","");
+
+
+
+                    }
+                }
+        }
+        System.out.println("move: " + s);
+        printBoard();
+        }
+
+    
+    public static void printBoard() {
+
+        for (int i=0; i<8;i++) {
+            for (int j=0;j<8;j++)
+                System.out.print(board[i][j]);
+            System.out.println();
+        }
+    }
+
 
     /**
      * Reads the file named by path and returns its content as a String.
@@ -390,9 +615,23 @@ public class PgnReader {
 
         for (int i=1;i<=numMoves(game);i++)
         {
-            System.out.println(i);
             fullMove(i,getMove(i, game));
+
+        System.out.println(finalPosition(game));
         }
+        //halfMove("OOO");
+
+        System.out.println("is legal "+isLegal(1, 4, 3, 4, true));
+        //halfMove("g4");
+        System.out.println(finalPosition(game));
+        //System.out.println(rayCaster(board, 7,3,0,1));
+//        printBoard();
+  //      halfMove("g4");
+    //    printBoard();
+
+        //System.out.println(rayCasterCoords(board, 7,3,0,1)[0]);
+        //System.out.println(rayCasterCoords(board, 7,3,0,1)[1]);
+        //System.out.println("check " + inCheck(board, 'K'));
         //int[] a = {1,1};
         //isLegal(a,a);
 

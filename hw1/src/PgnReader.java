@@ -15,103 +15,114 @@ public class PgnReader {
     private static String passant = "-";
 
     private static char[][] board = {
-            { 'r', 'n', 'b', 'q', 'k', 'b', 'n', 'r' },
-            { 'p', 'p', 'p', 'p', 'p', 'p', 'p', 'p' },
-            { '0', '0', '0', '0', '0', '0', '0', '0' },
-            { '0', '0', '0', '0', '0', '0', '0', '0' },
-            { '0', '0', '0', '0', '0', '0', '0', '0' },
-            { '0', '0', '0', '0', '0', '0', '0', '0' },
-            { 'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P' },
-            { 'R', 'N', 'B', 'Q', 'K', 'B', 'N', 'R' }};
-    private static boolean isWhite(char p)
-    {
+        {'r', 'n', 'b', 'q', 'k', 'b', 'n', 'r'},
+        {'p', 'p', 'p', 'p', 'p', 'p', 'p', 'p'},
+        {'0', '0', '0', '0', '0', '0', '0', '0'},
+        {'0', '0', '0', '0', '0', '0', '0', '0'},
+        {'0', '0', '0', '0', '0', '0', '0', '0'},
+        {'0', '0', '0', '0', '0', '0', '0', '0'},
+        {'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P'},
+        {'R', 'N', 'B', 'Q', 'K', 'B', 'N', 'R'} };
+
+    private static boolean isWhite(char p) {
         return Character.isUpperCase(p);
     }
-    private static boolean isBlack(char p)
-    {
+
+    private static boolean isBlack(char p) {
         return Character.isLowerCase(p);
     }
+
     // is target between start and stop?
-    private static boolean isBetween(int[] start, int[] stop, int[] target, int x, int y)
-    {
+    private static boolean isBetween(int[] start, int[] stop, int[] target,
+            int x, int y) {
         int rank;
         int file;
-        for (int i = 1; i<=8; i++) {
+        for (int i = 1; i <= 8; i++) {
             rank = start[0] + (y * i * -1);
             file = start[1] + (x * i);
             if (rank < 8 && rank >= 0 && file < 8 && file >= 0) {
-                if (rank == target[0] && file == target[1])
+                if (rank == target[0] && file == target[1]) {
                     return true;
-                if (rank == stop[0] && file == stop[1])
+                }
+                if (rank == stop[0] && file == stop[1]) {
                     return false;
-            } 
+                }
+            }
         }
         return false;
-        
+
     }
+
     /**
-     * Cast a ray to find if there is a piece in any direction from a given square.
+     * Cast a ray to find if there is a piece in any direction from a given
+     * square.
      *
      * @param theoreticalBoard
-     *          board on which the arrays will be cast
+     *            board on which the arrays will be cast
      * @param i
-     *          y value (rank/row) of the square
+     *            y value (rank/row) of the square
      * @param j
-     *          x value (file/column) of the square
+     *            x value (file/column) of the square
      * @param x
-     *          x component of the vector that determines the direction of the ray
+     *            x component of the vector that determines the direction of the
+     *            ray
      * @param y
-     *          y component of the vector that determines the direction of the ray
-     *          
-     * @return the coordinates of the first piece the ray collides with, or '0' if none
+     *            y component of the vector that determines the direction of the
+     *            ray
+     *
+     * @return the coordinates of the first piece the ray collides with, or '0'
+     *         if none
      */
-    private static int[] rayCasterCoords(char[][] theoreticalBoard, int i, int j, int x, int y)
-    {
+    private static int[] rayCasterCoords(char[][] theoreticalBoard, int i,
+            int j, int x, int y) {
         j += x; // go ahead and add one iteration cause we
         i -= y; // don't want to return our own piece
-        while (i>=0 && j>=0 && i<8 && j<8)
-        {
-            if (theoreticalBoard[i][j] != '0')
-                return new int[]{i, j};
+        while (i >= 0 && j >= 0 && i < 8 && j < 8) {
+            if (theoreticalBoard[i][j] != '0') {
+                return new int[] {i, j};
+            }
             j += x;
             i -= y;
         }
-        return new int[]{-1,-1}; // ray ran off the board
+        return new int[] {-1, -1}; // ray ran off the board
     }
+
     /**
-     * Cast a ray to find if there is a piece in any direction from a given square.
+     * Cast a ray to find if there is a piece in any direction from a given
+     * square.
      *
      * @param theoreticalBoard
-     *          board on which the arrays will be cast
+     *            board on which the arrays will be cast
      * @param i
-     *          y value (rank/row) of the square
+     *            y value (rank/row) of the square
      * @param j
-     *          x value (file/column) of the square
+     *            x value (file/column) of the square
      * @param x
-     *          x component of the vector that determines the direction of the ray
+     *            x component of the vector that determines the direction of the
+     *            ray
      * @param y
-     *          y component of the vector that determines the direction of the ray
-     *          
+     *            y component of the vector that determines the direction of the
+     *            ray
+     *
      * @return the first piece the ray collides with, or '0' if none
      */
-    private static char rayCaster(char[][] theoreticalBoard, int i, int j, int x, int y)
-    {
+    private static char rayCaster(char[][] theoreticalBoard, int i, int j,
+            int x, int y) {
         j += x; // go ahead and add one iteration cause we
         i -= y; // don't want to return our own piece
-        while (i>=0 && j>=0 && i<8 && j<8)
-        {
-            if (theoreticalBoard[i][j] != '0')
+        while (i >= 0 && j >= 0 && i < 8 && j < 8) {
+            if (theoreticalBoard[i][j] != '0') {
                 return theoreticalBoard[i][j];
+            }
             j += x;
             i -= y;
         }
         return '0'; // ray ran off the board
     }
 
-    private static boolean inCheck(char[][] theoreticalBoard, char king)
-    {
-        for (int i=0;i<8;i++) {
-            for (int j=0;j<8;j++) {
+    private static boolean inCheck(char[][] theoreticalBoard, char king) {
+        for (int i = 0; i < 8; i++) {
+            for (int j = 0; j < 8; j++) {
                 char p = theoreticalBoard[i][j];
                 char rook = 'r';
                 char knight = 'n';
@@ -128,109 +139,131 @@ public class PgnReader {
                     pawn = 'P';
                 }
                 if (p == rook) {
-                    if (rayCaster(theoreticalBoard, i, j, 1, 0) == king ||
-                            rayCaster(theoreticalBoard, i, j, 0, 1) == king ||
-                            rayCaster(theoreticalBoard, i, j, -1,0) == king ||
-                            rayCaster(theoreticalBoard, i, j, 0,-1) == king)
+                    if (rayCaster(theoreticalBoard, i, j, 1, 0) == king
+                            || rayCaster(theoreticalBoard, i, j, 0, 1) == king
+                            || rayCaster(theoreticalBoard, i, j, -1, 0) == king
+                            || rayCaster(theoreticalBoard, i, j, 0,
+                                    -1) == king) {
                         return true;
+                    }
                 }
-                if (p == knight) {
+                //if (p == knight) {
+                    //System.out.println();
                     // I don't think there's actually any point in checking
                     // this because a knight can't pin anything.
                     // TODO
                     // ^ that is stupid reasoning and fake news
                     // king could still try to walk into it
-                }
+                //}
                 if (p == bishop) {
-                    if (rayCaster(theoreticalBoard, i, j, 1, 1) == king ||
-                            rayCaster(theoreticalBoard, i, j, -1,-1) == king ||
-                            rayCaster(theoreticalBoard, i, j, -1, 1) == king ||
-                            rayCaster(theoreticalBoard, i, j, 1, -1) == king)
+                    if (rayCaster(theoreticalBoard, i, j, 1, 1) == king
+                            || rayCaster(theoreticalBoard, i, j, -1, -1) == king
+                            || rayCaster(theoreticalBoard, i, j, -1, 1) == king
+                            || rayCaster(theoreticalBoard, i, j, 1,
+                                    -1) == king) {
                         return true;
+                    }
                 }
                 if (p == queen) {
-                    if (rayCaster(theoreticalBoard, i, j, 1, 0) == king ||
-                            rayCaster(theoreticalBoard, i, j, 0, 1) == king ||
-                            rayCaster(theoreticalBoard, i, j, -1,0) == king ||
-                            rayCaster(theoreticalBoard, i, j, 0,-1) == king ||
-                            rayCaster(theoreticalBoard, i, j, 1, 1) == king ||
-                            rayCaster(theoreticalBoard, i, j, -1,-1) == king ||
-                            rayCaster(theoreticalBoard, i, j, -1, 1) == king ||
-                            rayCaster(theoreticalBoard, i, j, 1, -1) == king)
+                    if (rayCaster(theoreticalBoard, i, j, 1, 0) == king
+                            || rayCaster(theoreticalBoard, i, j, 0, 1) == king
+                            || rayCaster(theoreticalBoard, i, j, -1, 0) == king
+                            || rayCaster(theoreticalBoard, i, j, 0, -1) == king
+                            || rayCaster(theoreticalBoard, i, j, 1, 1) == king
+                            || rayCaster(theoreticalBoard, i, j, -1, -1) == king
+                            || rayCaster(theoreticalBoard, i, j, -1, 1) == king
+                            || rayCaster(theoreticalBoard, i, j, 1,
+                                    -1) == king) {
                         return true;
+                    }
                 }
                 if (p == enemyKing) {
-                    for (int k=-1;k<2;k++)
-                    {
-                        for (int l=-1;l<2;l++)
-                        {
-                            if ((k+i >= 0 && k+i < 8) && (l+j >= 0 && l+j < 8))
-                            {
-                                if (theoreticalBoard[i+k][j+l] == king)
+                    for (int k = -1; k < 2; k++) {
+                        for (int l = -1; l < 2; l++) {
+                            if ((k + i >= 0 && k + i < 8)
+                                    && (l + j >= 0 && l + j < 8)) {
+                                if (theoreticalBoard[i + k][j + l] == king) {
                                     return true;
+                                }
                             }
 
                         }
                     }
                 }
 
-                if (p == pawn){
-                    //TODO pawn check
-                }
+                //if (p == pawn) {
+                    //System.out.println();
+                    // TODO pawn check
+                //}
             }
         }
         return false;
     }
-    private static boolean isLegal(String c, boolean whitesTurn)
-    {
+
+    private static boolean isLegal(String c, boolean isWhitesTurn) {
         char king = 'K';
         char queen = 'Q';
-        if (!whitesTurn){
+        if (!isWhitesTurn) {
             king = 'k';
             queen = 'q';
         }
-        if (c.equals("000")) // queen side castling
-            if (castle.indexOf(queen) == -1)
+        if (c.equals("000")) { // queen side castling
+            if (castle.indexOf(queen) == -1) {
                 return false;
-        if (c.equals("00")) // king side castling
-            if (castle.indexOf(king) == -1)
+            }
+        }
+        if (c.equals("00")) { // king side castling
+            if (castle.indexOf(king) == -1) {
                 return false;
-        else
-            return false;
+            }
+        }
+        // else {
+        // return false;
+        // }
         return true;
     }
 
-    private static boolean isLegal(int iR, int iF, int fR, int fF, boolean whitesTurn) {
+    private static boolean isLegal(int iR, int iF, int fR, int fF,
+            boolean isWhitesTurn) {
         char piece = board[iR][iF];
-        //System.out.println("(legal)piece "+piece);
         char finalSquare = board[fR][fF];
-        //System.out.println("final piece "+fR+" "+fF+" "+ finalSquare);
         char[][] theoreticalBoard = new char[8][8];
-        for (int i=0;i<8;i++)
-            for (int j=0;j<8;j++)
+        for (int i = 0; i < 8; i++) {
+            for (int j = 0; j < 8; j++) {
                 theoreticalBoard[i][j] = board[i][j];
-        int[] fSquare = new int[]{fF, fR};
-        int[] iSquare = new int[]{iF, iR};
-        theoreticalBoard[fR][fF] = board[iR][iF]; // new board as if move is done
+            }
+        }
+        int[] fSquare = new int[] {fR, fF};
+        int[] iSquare = new int[] {iR, iF};
+        theoreticalBoard[fR][fF] = board[iR][iF]; // new board as if move is
+                                                  // done
         theoreticalBoard[iR][iF] = '0';
         int passantR = -1;
         int passantF = -1;
         if (!passant.equals("-")) {
-            passantR = 8 - Integer.valueOf(passant.charAt(1)+"");
-            passantF = passant.charAt(0) - 97; // subtracting 97 from the char will give a value from 0 to 7 that will correspond to the file in the array
+            passantR = 8 - Integer.valueOf(passant.charAt(1) + "");
+            passantF = passant.charAt(0) - 97; // subtracting 97 from the char
+                                               // will give a value from 0 to 7
+                                               // that will correspond to the
+                                               // file in the array
         }
 
-        if ((isWhite(piece) && isWhite(finalSquare)) || (isBlack(piece) && isBlack(finalSquare))){
+        if ((isWhite(piece) && isWhite(finalSquare))
+                || (isBlack(piece) && isBlack(finalSquare))) {
+
             return false; // if a piece is trying to move onto its own, there's
-                          // something wrong and it's def not legal
-        }
-       
-        if (whitesTurn)
-            if (inCheck(theoreticalBoard, 'K'))
-                return false;  // white's move can't put white in check
-        else
-            if (inCheck(theoreticalBoard, 'k'))
+        }                  // something wrong and it's def not legal
+
+
+        if (isWhitesTurn) {
+            if (inCheck(theoreticalBoard, 'K')) {
+                return false; // white's move can't put white in check
+            }
+        } else {
+            if (inCheck(theoreticalBoard, 'k')) {
                 return false; // black's move can't put black in check
+            }
+        }
 
         int[] upRight = rayCasterCoords(board, iR, iF, 1, 1);
         int[] upLeft = rayCasterCoords(board, iR, iF, -1, 1);
@@ -244,26 +277,25 @@ public class PgnReader {
         switch (piece) {
         case 'r':
         case 'R':
-            if (!isBetween(iSquare, up, fSquare, 0, 1) &&
-                !isBetween(iSquare, down, fSquare, 0, -1) &&
-                !isBetween(iSquare, left, fSquare, -1, 0) &&
-                !isBetween(iSquare, right, fSquare, 1, 0))
+            if (!isBetween(iSquare, up, fSquare, 0, 1)
+                    && !isBetween(iSquare, down, fSquare, 0, -1)
+                    && !isBetween(iSquare, left, fSquare, -1, 0)
+                    && !isBetween(iSquare, right, fSquare, 1, 0)) {
                 return false;
+            }
             break;
 
         case 'n':
         case 'N':
-            if (fF == iF + 2 || fF == iF -2) {
+            if (fF == iF + 2 || fF == iF - 2) {
                 if (iR + 1 != fR && iR - 1 != fR) {
-                    return false; 
-                }
-            }
-            else if (fR == iR - 2 || fR == iR + 2) {
-                if (iF + 1 != fF && iF -1 != fF) {
                     return false;
                 }
-            }
-            else  {
+            } else if (fR == iR - 2 || fR == iR + 2) {
+                if (iF + 1 != fF && iF - 1 != fF) {
+                    return false;
+                }
+            } else {
                 return false; // if it doesn't move like a knight it's illegal
                               // what more is there to say?
             }
@@ -271,45 +303,52 @@ public class PgnReader {
             break;
         case 'b':
         case 'B':
-
-            if (!isBetween(iSquare, upRight, fSquare, 1, 1) &&
-                !isBetween(iSquare, downRight, fSquare, 1, -1) &&
-                !isBetween(iSquare, downLeft, fSquare, -1, -1) &&
-                !isBetween(iSquare, upLeft, fSquare, -1, 1))
-                return false; // actual movement is not equal to raycast in any drection; not valid
+            if (!isBetween(iSquare, upRight, fSquare, 1, 1)
+                    && !isBetween(iSquare, downRight, fSquare, 1, -1)
+                    && !isBetween(iSquare, downLeft, fSquare, -1, -1)
+                    && !isBetween(iSquare, upLeft, fSquare, -1, 1)) {
+                return false; // actual movement is not equal to raycast in any
+                              // drection; not valid
+            }
             break;
         case 'q':
         case 'Q':
-           // System.out.println("thing "+fSquare[0]+' '+fSquare[1]+' '+up[0]+' '+up[1]);
-            if (!isBetween(iSquare, upRight, fSquare, 1, 1) &&
-                !isBetween(iSquare, downRight, fSquare, 1, -1) &&
-                !isBetween(iSquare, downLeft, fSquare, -1, -1) &&
-                !isBetween(iSquare, upLeft, fSquare, -1, 1) &&
-                !isBetween(iSquare, up, fSquare, 0, 1) &&
-                !isBetween(iSquare, down, fSquare, 0, -1) &&
-                !isBetween(iSquare, left, fSquare, -1, 0) &&
-                !isBetween(iSquare, right, fSquare, 1, 0))
-                return false; // actual movement is not equal to raycast in any drection; not valid
+            // System.out.println("thing "+fSquare[0]+' '+fSquare[1]+' '+up[0]+'
+            // '+up[1]);
+
+            if (!isBetween(iSquare, upRight, fSquare, 1, 1)
+                    && !isBetween(iSquare, downRight, fSquare, 1, -1)
+                    && !isBetween(iSquare, downLeft, fSquare, -1, -1)
+                    && !isBetween(iSquare, upLeft, fSquare, -1, 1)
+                    && !isBetween(iSquare, up, fSquare, 0, 1)
+                    && !isBetween(iSquare, down, fSquare, 0, -1)
+                    && !isBetween(iSquare, left, fSquare, -1, 0)
+                    && !isBetween(iSquare, right, fSquare, 1, 0)) {
+                return false; // actual movement is not equal to raycast in any
+                              // drection; not valid
+            }
             break;
         case 'k':
         case 'K':
-            //System.out.println("king "+Math.abs(fF-iF) + " " + Math.abs(fR -iR));
-            if (Math.abs(fF - iF) > 1 || Math.abs(fR - iR) > 1)
+            // -iR));
+            if (Math.abs(fF - iF) > 1 || Math.abs(fR - iR) > 1) {
                 return false; // king can't move more than one square
+            }
             break;
         case 'p':
             if (iR >= fR) {
 
                 return false; // black pawn can't move up the board
             }
-            if (fR - iR > 1)
-            {
+            if (fR - iR > 1) {
                 if (iR != 1 || fR - iR > 2) {
-                    return false; // pawn can sometimes move two if it is second row
+                    return false; // pawn can sometimes move two if it is second
+                                  // row
                 }
             }
             if (iF != fF) {
-                if (Math.abs(iF - fF) > 1 || !isWhite(board[fR][fF]) && !(passantF == fF && passantR == fR)) {
+                if (Math.abs(iF - fF) > 1 || !isWhite(board[fR][fF])
+                        && !(passantF == fF && passantR == fR)) {
                     return false; // can't move more than one over
                                   // and there has to be a white piece to take
                                   // or it's moving onto the passant square
@@ -317,23 +356,26 @@ public class PgnReader {
             }
             break;
         case 'P':
-            if (iR <= fR)
-            {
+            if (iR <= fR) {
                 return false; // white pawn can't move down the board
             }
-            if (iR - fR > 1)
-                if (iR != 6 || iR - fR > 2)
-                {
-                    return false; // pawn can sometimes move two if it is 7th row
+            if (iR - fR > 1) {
+                if (iR != 6 || iR - fR > 2) {
+                    return false; // pawn can sometimes move two if it is 7th
+                                  // row
                 }
+            }
             if (iF != fF) {
-                if (Math.abs(iF - fF) > 1 || !isBlack(board[fR][fF]) && !(passantF == fF && passantR == fR)){
+                if (Math.abs(iF - fF) > 1 || !isBlack(board[fR][fF])
+                        && !(passantF == fF && passantR == fR)) {
 
                     return false; // can't move more than one over
                                   // and there has to be a black piece to take
                                   // or it's moving into the passant square
                 }
             }
+            break;
+        default:
             break;
         }
         return true;
@@ -353,7 +395,6 @@ public class PgnReader {
         char turn = 'b';
         for (int i = 0; i < 8; i++) {
             int k = 0;
-            int mod = 1;
             for (int j = 0; j < 8; j++) {
                 char square = board[i][j];
                 if (square != '0') {
@@ -362,19 +403,26 @@ public class PgnReader {
                         k = 0;
                     }
                     fen += square;
-                    mod = 0;
-                } else if (k > 0 && j == 7)
-                    fen += (k+1) + mod;
-                else if (k == 0 && j == 7)
+                } else if (k > 0 && j == 7) {
+                    fen += (k + 1);
+                } else if (k == 0 && j == 7) {
                     fen += 1;
-                else
+                } else {
                     k++;
+                }
             }
-            fen += "/";
+            if (i != 7) {
+                fen += "/";
+            }
         }
 
-        if (whitesTurn)
+        if (whitesTurn) {
             turn = 'w';
+        }
+
+        if (castle.length() == 0) {
+            castle = "-";
+        }
 
         return fen + " " + turn + " " + castle + " " + passant + " " + halfMove
                 + " " + fullMove;
@@ -395,8 +443,9 @@ public class PgnReader {
         Pattern pattern = Pattern
                 .compile("\\[" + tagName + " \"(.*?)\"(.|\\s)*");
         Matcher matcher = pattern.matcher(game);
-        if (matcher.find())
+        if (matcher.find()) {
             return matcher.group(1);
+        }
         return "NOT GIVEN";
     }
 
@@ -415,48 +464,52 @@ public class PgnReader {
     }
 
     private static String getMove(int i, String game) {
-        Pattern pattern = Pattern
-                .compile("(.|\\s)*?"+i+"\\.[ \n]+(.*?)("+(i+1)+"\\.|\\n)");
+        game = game.replaceAll("\n", " ");
+        Pattern pattern = Pattern.compile(
+                "(.|\\s)*?" + i + "\\.[ ]+(.*?)(" + (i + 1) + "\\.|$)");
+
         Matcher matcher = pattern.matcher(game);
-        if (matcher.find())
-        {
+        if (matcher.find()) {
             return matcher.group(2);
         }
         return "";
     }
 
     private static void fullMove(int i, String move) {
+
         Pattern pattern = Pattern.compile("([^ ]*)( ?)(.*)?");
         Matcher matcher = pattern.matcher(move);
+
         matcher.matches();
 
         String whiteMove = matcher.group(1);
-        whiteMove = whiteMove.replaceAll("[^a-zA-Z\\d]","");
+        whiteMove = whiteMove.replaceAll("[^a-zA-Z\\d]", "");
         String blackMove = "";
         blackMove = matcher.group(3);
-        blackMove = blackMove.replaceAll("[^a-zA-Z\\d]","");
+        blackMove = blackMove.replaceAll("[^a-zA-Z\\d]", "");
 
-        System.out.println("whitemove: " +whiteMove);
+        // System.out.println("whitemove: " + whiteMove);
         if (!whiteMove.equals("01") && !whiteMove.equals("1212")) {
             halfMove(whiteMove);
             whitesTurn = false;
         }
-        fullMove++;
 
-        //halfMove++;
-        System.out.println("blackmove: " +blackMove);
-        if (!blackMove.equals("") && !blackMove.equals("10") && !blackMove.equals("1212")) {
+        // halfMove++;
+        // System.out.println("blackmove: " + blackMove);
+        if (!blackMove.equals("") && !blackMove.equals("10")
+                && !blackMove.equals("1212")) {
             halfMove(blackMove);
             whitesTurn = true;
         }
+        fullMove++;
 
     }
+
     private static void halfMove(String s) {
-        Pattern pattern = Pattern.compile("([KQNBRPO]?)([a-h]??)([1-8]??)x?([a-hO])([1-8O])([QNBR]?)");
+        Pattern pattern = Pattern.compile(
+                "([KQNBRPO]?)([a-h]??)([1-8]??)x?([a-hO])([1-8O])([QNBR]?)");
         Matcher matcher = pattern.matcher(s);
         matcher.matches();
-        for (int i=0; i<6; i++)
-           System.out.println("group " + i +": (" + matcher.group(i)+")");
         String piece = matcher.group(1);
         String iFile = matcher.group(2);
         String iRank = matcher.group(3);
@@ -468,114 +521,143 @@ public class PgnReader {
         int fF = -1;
         int fR = -1;
 
-
-        if (!iFile.equals(""))
+        if (!iFile.equals("")) {
             iF = iFile.charAt(0) - 97;
+        }
         fF = fFile.charAt(0) - 97;
-        if (!iRank.equals(""))
-            iR = 8 - Integer.valueOf(iRank.charAt(0)+"");
-        if (!fRank.equals("O"))
-            fR = 8 - Integer.valueOf(fRank.charAt(0)+"");
+        if (!iRank.equals("")) {
+            iR = 8 - Integer.valueOf(iRank.charAt(0) + "");
+        }
+        if (!fRank.equals("O")) {
+            fR = 8 - Integer.valueOf(fRank.charAt(0) + "");
+        }
 
-        if (piece.equals(""))
-        {
+        if (piece.equals("")) {
             piece = "P";
         }
 
-        if (s.indexOf('x') != -1 || piece == "P")
+        if (s.indexOf('x') != -1 || piece.equals("P")) {
             halfMove = 0; // piece captured or pawn moved; reset clock
-        else
+        } else {
             halfMove++;
+        }
 
         char p = piece.charAt(0);
-        if (!whitesTurn)
+        if (!whitesTurn) {
             p = Character.toLowerCase(p);
-        if (piece.equals("O")) { // queen castle
-            System.out.println("attempting queen castle");
-            if(isLegal(s,whitesTurn)) {
-                int rank = 0;
-                if (whitesTurn)  {
-                    rank = 7;
-                    castle = castle.replace("KQ","");
-                }
-                else 
-                    castle = castle.replace("kq","");
-                board[rank][4] = '0'; // move king
-                board[rank][2] = 'K';
-                board[rank][0] = '0'; // move rook
-                board[rank][3] = 'R';
-            }
         }
-                
-        else if (fFile.equals("O") && !piece.equals("O")) {
-            System.out.println("attempting king castle");
-            if(isLegal(s,whitesTurn)) {
+        if (piece.equals("O")) { // queen castle
+            if (isLegal(s, whitesTurn)) {
                 int rank = 0;
+                char king = 'k';
+                char rook = 'r';
                 if (whitesTurn) {
                     rank = 7;
-                    castle = castle.replace("KQ","");
+                    king = 'K';
+                    rook = 'R';
+                    castle = castle.replace("KQ", "");
+                } else {
+                    castle = castle.replace("kq", "");
                 }
-                else
-                    castle = castle.replace("kq","");
                 board[rank][4] = '0'; // move king
-                board[rank][6] = 'K';
-                board[rank][7] = '0'; // move rook
-                board[rank][5] = 'R';
+                board[rank][2] = king;
+                board[rank][0] = '0'; // move rook
+                board[rank][3] = rook;
             }
         }
-        else {
 
-            for (int i=0; i<8;i++)
-                for (int j=0;j<8;j++)
-                    if (board[i][j] == p && (iR == i || iR == -1) &&
-                            (iF == j || iF == -1)) {
+        else if (fFile.equals("O") && !piece.equals("O")) {
+            if (isLegal(s, whitesTurn)) {
+                int rank = 0;
+                char king = 'k';
+                char rook = 'r';
+                if (whitesTurn) {
+                    rank = 7;
+                    king = 'K';
+                    rook = 'R';
+                    castle = castle.replace("KQ", "");
+                } else {
+                    castle = castle.replace("kq", "");
+                }
+                board[rank][4] = '0'; // move king
+                board[rank][6] = king;
+                board[rank][7] = '0'; // move rook
+                board[rank][5] = rook;
+            }
+        } else {
+            boolean madeMove = false;
+
+            for (int i = 0; i < 8; i++) {
+                for (int j = 0; j < 8; j++) {
+                    if (board[i][j] == p && (iR == i || iR == -1)
+                            && (iF == j || iF == -1)) {
                         if (isLegal(i, j, fR, fF, whitesTurn)) {
                             board[i][j] = '0';
                             board[fR][fF] = p;
-                            System.out.println("made move: " + piece+"("+i+", "+j+") to "+"("+fR+","+fF+")");
+                            if (!passant.equals("-") && fR == (8
+                                    - Integer.valueOf(passant.charAt(1) + ""))
+                                    && fF == passant.charAt(0) - 97) {
+                                if (whitesTurn) {
+                                    board[fR + 1][fF] = '0';
+                                } else {
+                                    board[fR - 1][fF] = '0';
+                                }
+                            }
+                            // is this really more readable??
+                            madeMove = true;
+
                             // en passant
                             passant = "-";
-                            if (Character.toLowerCase(p) == 'p' && fR - iR == 2) {
+                            if (Character.toLowerCase(p) == 'p'
+                                    && Math.abs(fR - i) == 2) {
                                 passant = "";
-                                passant += (char)(iF + 97);
-                                passant += 8 - (fR+iR)/2;
+                                passant += (char) (j + 97);
+                                passant += 8 - (fR + i) / 2;
                             }
                             // promotions
-                            if (!promotion.equals("")){
+                            if (!promotion.equals("")) {
                                 char newPiece = promotion.charAt(0);
-                                if (!whitesTurn)
+                                if (!whitesTurn) {
                                     newPiece = Character.toLowerCase(newPiece);
+                                }
                                 board[fR][fF] = newPiece;
                             }
                             // castling
-                            if (i == 7 && j == 0)
-                                castle = castle.replace("Q","");
-                            if (i ==7 && j == 7)
-                                castle = castle.replace("K","");
-                            if (i == 0 && j == 0)
-                                castle = castle.replace("q","");
-                            if (i == 0 && j == 7)
-                                castle = castle.replace("k","");
-
-
-
+                            if (i == 7 && j == 0) {
+                                castle = castle.replace("Q", "");
+                            }
+                            if (i == 7 && j == 7) {
+                                castle = castle.replace("K", "");
+                            }
+                            if (i == 0 && j == 0) {
+                                castle = castle.replace("q", "");
+                            }
+                            if (i == 0 && j == 7) {
+                                castle = castle.replace("k", "");
+                            }
+                        }
                     }
                 }
+            }
+            if (!madeMove) {
+                System.out.println("Error, no legal move found.");
+                System.out.println("No point in continuing.  Exiting...");
+                System.exit(0);
+            }
         }
-        System.out.println("move: " + s);
-        printBoard();
-        }
+       // System.out.println("move: " + s);
+       // printBoard();
+    }
 
-    
     public static void printBoard() {
 
-        for (int i=0; i<8;i++) {
-            for (int j=0;j<8;j++)
+        for (int i = 0; i < 8; i++) {
+            for (int j = 0; j < 8; j++) {
                 System.out.print(board[i][j]);
+            }
             System.out.println();
         }
     }
-
 
     /**
      * Reads the file named by path and returns its content as a String.
@@ -610,30 +692,10 @@ public class PgnReader {
         System.out.format("Black: %s%n", tagValue("Black", game));
         System.out.format("Result: %s%n", tagValue("Result", game));
         System.out.println("Final Position:");
-        System.out.println(finalPosition(game));
-        System.out.format("number of moves: %d%n", numMoves(game));
 
-        for (int i=1;i<=numMoves(game);i++)
-        {
-            fullMove(i,getMove(i, game));
-
-        System.out.println(finalPosition(game));
+        for (int i = 1; i <= numMoves(game); i++) {
+            fullMove(i, getMove(i, game));
         }
-        //halfMove("OOO");
-
-        System.out.println("is legal "+isLegal(1, 4, 3, 4, true));
-        //halfMove("g4");
         System.out.println(finalPosition(game));
-        //System.out.println(rayCaster(board, 7,3,0,1));
-//        printBoard();
-  //      halfMove("g4");
-    //    printBoard();
-
-        //System.out.println(rayCasterCoords(board, 7,3,0,1)[0]);
-        //System.out.println(rayCasterCoords(board, 7,3,0,1)[1]);
-        //System.out.println("check " + inCheck(board, 'K'));
-        //int[] a = {1,1};
-        //isLegal(a,a);
-
     }
 }

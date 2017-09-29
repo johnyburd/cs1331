@@ -235,24 +235,22 @@ public class PgnReader {
         }
         int[] fSquare = new int[] {fR, fF};
         int[] iSquare = new int[] {iR, iF};
-        theoreticalBoard[fR][fF] = board[iR][iF]; // new board as if move is
-                                                  // done
+        theoreticalBoard[fR][fF] = board[iR][iF]; // board w/move done
         theoreticalBoard[iR][iF] = '0';
         int passantR = -1;
         int passantF = -1;
         if (!passant.equals("-")) {
             passantR = 8 - Integer.valueOf(passant.charAt(1) + "");
-            passantF = passant.charAt(0) - 97; // subtracting 97 from the char
-                                               // will give a value from 0 to 7
-                                               // that will correspond to the
-                                               // file in the array
+            // subtracting 97 from the char will give a value from 0 to 7
+            // that will correspond to the file in the array
+            passantF = passant.charAt(0) - 97;
         }
 
         if ((isWhite(piece) && isWhite(finalSquare))
                 || (isBlack(piece) && isBlack(finalSquare))) {
 
-            return false; // if a piece is trying to move onto its own, there's
-        }                  // something wrong and it's def not legal
+            return false; // if a piece is moving onto its own, not legal
+        }
 
 
         if (isWhitesTurn) {
@@ -297,7 +295,6 @@ public class PgnReader {
                 }
             } else {
                 return false; // if it doesn't move like a knight it's illegal
-                              // what more is there to say?
             }
 
             break;
@@ -313,8 +310,6 @@ public class PgnReader {
             break;
         case 'q':
         case 'Q':
-            // System.out.println("thing "+fSquare[0]+' '+fSquare[1]+' '+up[0]+'
-            // '+up[1]);
 
             if (!isBetween(iSquare, upRight, fSquare, 1, 1)
                     && !isBetween(iSquare, downRight, fSquare, 1, -1)
@@ -330,7 +325,6 @@ public class PgnReader {
             break;
         case 'k':
         case 'K':
-            // -iR));
             if (Math.abs(fF - iF) > 1 || Math.abs(fR - iR) > 1) {
                 return false; // king can't move more than one square
             }
@@ -349,9 +343,9 @@ public class PgnReader {
             if (iF != fF) {
                 if (Math.abs(iF - fF) > 1 || !isWhite(board[fR][fF])
                         && !(passantF == fF && passantR == fR)) {
-                    return false; // can't move more than one over
-                                  // and there has to be a white piece to take
-                                  // or it's moving onto the passant square
+                    return false;
+                    // can't move more than one over and there has to be a white
+                    // piece to take or it's moving onto the passant square
                 }
             }
             break;
@@ -564,9 +558,7 @@ public class PgnReader {
                 board[rank][0] = '0'; // move rook
                 board[rank][3] = rook;
             }
-        }
-
-        else if (fFile.equals("O") && !piece.equals("O")) {
+        } else if (fFile.equals("O") && !piece.equals("O")) {
             if (isLegal(s, whitesTurn)) {
                 int rank = 0;
                 char king = 'k';

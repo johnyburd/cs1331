@@ -675,6 +675,7 @@ public class PgnReader {
     }
 
     public static void main(String[] args) {
+        System.
         String game = fileContent(args[0]);
         System.out.format("Event: %s%n", tagValue("Event", game));
         System.out.format("Site: %s%n", tagValue("Site", game));

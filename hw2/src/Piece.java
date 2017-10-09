@@ -1,0 +1,15 @@
+public abstract class Piece {
+    private Color color;
+    
+    public Piece(Color c) {
+        color = c;
+    }
+
+    public Color getColor() {
+        return color;
+    }
+
+    public abstract String algebraicName();
+    public abstract String fenName();
+    public abstract Square[] movesFrom(Square square);
+}

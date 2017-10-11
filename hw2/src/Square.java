@@ -10,6 +10,10 @@ public class Square {
         this(f + "" + r);
     }
 
+    public boolean withinBounds() {
+        return file >= 'a' && file <= 'h' && rank >= '1' && rank <='8';
+    }
+
     public String toString() {
         return file + "" + rank;
     }

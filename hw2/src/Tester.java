@@ -1,10 +1,9 @@
 public class Tester {
     public static void main(String[] args) {
-		Piece knight = new Knight(Color.BLACK);
-		assert knight.algebraicName().equals("N");
-		assert knight.fenName().equals("n");
-        System.out.println(new Square("f6"));
-		Square[] attackedSquares = knight.movesFrom(new Square("f6"));
+		Piece knight = new Queen(Color.BLACK);
+		//assert knight.algebraicName().equals("N");
+		//assert knight.fenName().equals("n");
+		Square[] attackedSquares = knight.movesFrom(new Square("g6"));
         for (Square s : attackedSquares) {
             System.out.println(s);
         }

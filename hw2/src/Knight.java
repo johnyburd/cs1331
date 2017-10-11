@@ -1,7 +1,18 @@
+/**
+ * Implementation of the Piece class for a Knight
+ * 
+ * @author Jonathan Buchanan
+ *
+ **/
 import java.util.ArrayList;
 
 public class Knight extends Piece {
     private char fenName = 'N';
+    /**
+     * Create a Knight object
+     * 
+     * @param c     determines  the side that the knight belongs to
+     **/
     Knight(Color c) {
         super(c);
         if (c.equals(Color.BLACK))
@@ -9,16 +20,32 @@ public class Knight extends Piece {
     }
     
     @Override
+    /**
+     * An accessor for the Knight's symbol in algebraic notation
+     * 
+     * @return      symbol for the knight's piece
+     **/
     public String algebraicName() {
         return "" + Character.toUpperCase(fenName);
     }
 
     @Override
+    /**
+     * An accessor methof for the Knight's symbol in FEN
+     * 
+     * @return      symbol for the knight's piece
+     **/
     public String fenName() {
         return "" + fenName;
     }
 
     @Override
+    /**
+     * Gives every square the Knight could move to from a given square assuming an empty board
+     * 
+     * @param start the square the knight starts on
+     * @return      array of squares containing possible moves
+     **/
     public Square[] movesFrom(Square start) {
         ArrayList<Square> validSquares = new ArrayList<Square>();
         Square[] potSquares = {
@@ -33,7 +60,8 @@ public class Knight extends Piece {
         };
 
         for (Square s : potSquares) {
-            if (s.file >= 'a' && s.file <= 'h' && s.rank >= 1 && s.rank <=8) {
+            //System.out.println(s);
+            if (s.withinBounds()) {
                 validSquares.add(s);
             }
         }

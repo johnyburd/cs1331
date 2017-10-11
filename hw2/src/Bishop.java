@@ -8,7 +8,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 public class Bishop extends Piece {
-    private char fenName = 'B';
     /**
      * Creates a Bishop object.
      * 
@@ -16,8 +15,11 @@ public class Bishop extends Piece {
      **/
     public Bishop(Color c) {
         super(c);
-        if (c.equals(Color.BLACK))
+
+        fenName = 'B';
+        if (c.equals(Color.BLACK)) {
             fenName = Character.toLowerCase(fenName);
+        }
     }
 
     @Override

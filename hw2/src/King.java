@@ -7,7 +7,6 @@
 import java.util.ArrayList;
 
 public class King extends Piece {
-    private char fenName = 'K';
     /**
      * Create a King object
      * 
@@ -15,8 +14,11 @@ public class King extends Piece {
      **/
     public King(Color c) {
         super(c);
-        if (c.equals(Color.BLACK))
+
+        fenName = 'K';
+        if (c.equals(Color.BLACK)) {
             fenName = Character.toLowerCase(fenName);
+        }
     }
 
     @Override

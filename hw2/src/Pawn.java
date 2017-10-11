@@ -7,7 +7,6 @@
 import java.util.ArrayList;
 
 public class Pawn extends Piece {
-    private char fenName = 'P';
     /**
      * Create a Pawn object
      * 
@@ -15,6 +14,8 @@ public class Pawn extends Piece {
      **/
     public Pawn(Color c) {
         super(c);
+
+        fenName = 'P';
         if (c.equals(Color.BLACK))
             fenName = Character.toLowerCase(fenName);
     }

@@ -7,7 +7,6 @@
 import java.util.ArrayList;
 
 public class Knight extends Piece {
-    private char fenName = 'N';
     /**
      * Create a Knight object
      * 
@@ -15,8 +14,11 @@ public class Knight extends Piece {
      **/
     Knight(Color c) {
         super(c);
-        if (c.equals(Color.BLACK))
+
+        fenName = 'N';
+        if (c.equals(Color.BLACK)) {
             fenName = Character.toLowerCase(fenName);
+        }
     }
     
     @Override

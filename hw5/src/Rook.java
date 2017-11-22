@@ -1,16 +1,42 @@
+/**
+ * Class the represents a rook chesspiece
+ * @author Jonathan Buchanan
+ * @version 1
+ */
 public class Rook extends Piece {
+    /**
+     * Contruct a rook objcet
+     *
+     * @param c determines the side of the rook
+     */
     public Rook(Color c) {
         super(c);
     }
 
+    /**
+     * get the algebraicName
+     *
+     * @return algebraic Name
+     */
     public String algebraicName() {
         return "R";
     }
 
+    /**
+     * get the fenname
+     *
+     * @return fenname
+     */
     public String fenName() {
         return getColor() == Color.WHITE ? "R" : "r";
     }
 
+    /**
+     * calculates the squares the piece can mve to from a given square
+     *
+     * @param square    starting square
+     * @return          array of potential squares
+     */
     public Square[] movesFrom(Square square) {
         Square[] sq = new Square[27];
         int counter = 0;

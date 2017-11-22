@@ -1,16 +1,42 @@
+/**
+ * Class that representnss a Bishop piece
+ * @author Jonathan Buchanan
+ * @version 1
+ */
 public class Bishop extends Piece {
+    /**
+     * Constructor for a bishop
+     *
+     * @param c     color of the piece
+     */
     public Bishop(Color c) {
         super(c);
     }
 
+    /**
+     * algebraicName of the Bishop
+     *
+     * @return algebraic name of the bishop
+     */
     public String algebraicName() {
         return "B";
     }
 
+    /**
+     * fenname of the piece
+     *
+     * @return fenname of the piece
+     */
     public String fenName() {
         return getColor() == Color.WHITE ? "B" : "b";
     }
 
+    /**
+     * calculates the squares the piece could move to given a starting place
+     *
+     * @param square    the starting square
+     * @return          an array of potential movement places
+     */
     public Square[] movesFrom(Square square) {
         Square[] sq = new Square[27];
         int counter = 0;

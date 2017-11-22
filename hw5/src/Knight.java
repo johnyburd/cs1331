@@ -1,23 +1,51 @@
+/**
+ * A representation  of a Knight chesspiece
+ * @author Jonathan Buchanan
+ * @version 1
+ */
 public class Knight extends Piece {
+    /**
+     * creates a knight object
+     *
+     * @param c    determines the side of the piece
+     */
     public Knight(Color c) {
         super(c);
     }
 
+    /**
+     * gives the algebraicName of the knight
+     *
+     * @return  the algebraicName of the piece
+     */
     public String algebraicName() {
         return "N";
     }
 
+    /**
+     * gives the fenName of the Piece
+     *
+     * @return      the fenName of the Piece
+     */
     public String fenName() {
         return getColor() == Color.WHITE ? "N" : "n";
     }
 
+    /**
+     * Calculates all possible moves from a starting postion
+     *
+     * @param square    starting square
+     * @return          array of potential squares
+     */
     public Square[] movesFrom(Square square) {
         Square[] sq = new Square[8];
         int counter = 0;
         char rank = square.getRank();
         char file = square.getFile();
-        char[] ranks = new char[]{(char) (rank - 2), (char) (rank - 1), (char) (rank + 1), (char) (rank + 2)};
-        char[] files = new char[]{(char) (file - 2), (char) (file - 1), (char) (file + 1), (char) (file + 2)};
+        char[] ranks = new char[]{(char) (rank - 2),
+            (char) (rank - 1), (char) (rank + 1), (char) (rank + 2)};
+        char[] files = new char[]{(char) (file - 2),
+            (char) (file - 1), (char) (file + 1), (char) (file + 2)};
 
         if (isInBoard(files[0], ranks[1])) {
             sq[counter++] = new Square(files[0], ranks[1]);

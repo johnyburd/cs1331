@@ -1,16 +1,42 @@
+/**
+ * Class representation for a queen
+ * @author Jonathan Buchanan
+ * @version 1
+ */
 public class Queen extends Piece {
+    /**
+     * Constructor for a queen object
+     *
+     * @param c determines the side of the piece
+     */
     public Queen(Color c) {
         super(c);
     }
 
+    /**
+     * get the algebraicName
+     *
+     * @return the algebraicName
+     */
     public String algebraicName() {
         return "Q";
     }
 
+    /**
+     * get the fenname
+     *
+     * @return fenname
+     */
     public String fenName() {
         return getColor() == Color.WHITE ? "Q" : "q";
     }
 
+    /**
+     * calculate the squares a piece could move to
+     *
+     * @param square    starting square
+     * @return          array of potential squares
+     */
     public Square[] movesFrom(Square square) {
         Square[] sq = new Square[64];
         int counter = 0;
